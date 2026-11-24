@@ -1,0 +1,10 @@
+{
+  "frames": 60,
+  "mean_landmark_confidence": 0.8157058673289915,
+  "reprojection_rmse_px": 3.1516942977905273,
+  "pseudo_3d_rmse_m": 0.02687898278236389,
+  "reference": "MediaPipe landmarks extracted from the input video",
+  "interpretation": "Training residuals against estimated landmarks. Ground-truth 3D accuracy is unmeasured.",
+  "camera": "Fixed weak-perspective camera with estimated scale and zero root depth translation",
+  "fps": 30.0
+}
