@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>WalkEdit — Motion studio</title><link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script></head>
+<body>
+<header class="topbar"><a class="brand" href="/" aria-label="WalkEdit home"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m3 8 6 16 7-16 7 16 6-16" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>WalkEdit<span>Motion studio</span></a><div class="top-actions"><span class="local-tag">Local workspace</span><button id="new-session" class="quiet">New session</button></div></header>
+<main>
+<div class="page-heading"><div><p class="eyebrow">VIDEO TO MOTION. WORDS TO RHYTHM.</p><h1>Give your motion a new pace.</h1><p class="intro">Describe the timing. Watch the 3D motion change.</p></div><span class="model-tag">SMPL-X <span aria-hidden="true">/</span> 3D retiming</span></div>
+<div class="workspace">
+<section class="editor" aria-label="Motion preview">
+<div class="panel-heading"><div class="panel-title"><span class="dot" aria-hidden="true"></span><h2>Motion preview</h2></div><span id="preview-kind" class="caption">Ready for your first edit</span></div>
+<div class="video-stage"><video id="comparison" controls playsinline preload="metadata" aria-label="Original and retimed SMPL-X motion comparison"></video><div id="empty-stage"><svg viewBox="0 0 80 100" fill="none" aria-hidden="true"><circle cx="43" cy="13" r="8"/><path d="m42 26-7 25 18 12 7 25M35 51 23 72 9 88M40 30 23 38 9 32M40 30 55 41 70 40"/></svg><p>Your next edit starts with a sentence.</p></div></div>
+<div class="comparison-note"><span class="legend"><i></i>Original <i></i>Edited</span><span>Same body. Same camera. A different clock.</span></div>
+<div class="metrics"><div><span>EDIT SPEED</span><strong id="speed">1<span>×</span></strong></div><div><span>EDITED MOTION</span><strong id="edited-duration">—</strong></div><div><span>SOURCE MOTION</span><strong id="source-duration">—</strong></div></div>
+<section class="time-map" aria-label="Edit timing"><div class="time-map-heading"><h3>Source-time map</h3><span id="scope">Whole motion</span></div><svg id="time-plot" viewBox="0 0 720 100" role="img" aria-label="Source time as a function of output time"><path class="grid-line" d="M12 12H708M12 50H708M12 88H708"/><path id="identity-line" d="M12 88 708 12"/><path id="time-line" d="M12 88 708 12"/></svg><div class="plot-caption"><span>Output time →</span><span id="ramp">No transition ramp</span></div></section>
+<div class="exports"><span id="render-details">A command creates a new motion file and MP4.</span><div><a id="download-video" class="download" aria-disabled="true">MP4 <span aria-hidden="true">↗</span></a><a id="download-motion" class="download" aria-disabled="true">Motion .pt <span aria-hidden="true">↗</span></a><a id="download-plan" class="download" aria-disabled="true">Edit JSON <span aria-hidden="true">↗</span></a></div></div>
+</section>
+<section class="chat" aria-labelledby="chat-title"><div class="chat-heading"><div><h2 id="chat-title">Direct the motion</h2><p>English commands · No API key</p></div><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 2 2.7 7.3L22 12l-7.3 2.7L12 22l-2.7-7.3L2 12l7.3-2.7L12 2Z" stroke="currentColor" stroke-width="1.5"/></svg></div>
+<div id="messages" class="messages" role="log" aria-label="Motion conversation" aria-live="polite" aria-relevant="additions"></div>
+<div class="suggestions" aria-label="Example commands"><button data-command="Set speed to 1.5x">1.5× speed</button><button data-command="Set speed to 0.5x">Half speed</button><button data-command="Set speed to 2x from 0.5 to 1.5 seconds with a smooth transition of 0.2 seconds">Smooth interval</button><button data-command="Reset">Reset</button></div>
+<div id="render-status" class="render-status" role="status"><span id="status-dot" aria-hidden="true"></span><span id="status-text">Connecting to the motion workspace…</span></div>
+<form id="chat-form"><label for="command">Motion command</label><div class="composer"><textarea id="command" rows="2" maxlength="500" placeholder="Set speed to 1.5x" aria-describedby="command-hint"></textarea><button id="send" type="submit" aria-label="Send motion command"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 7-7 7 7M12 5v15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="composer-footer"><span id="command-hint">Enter to send · Shift + Enter for a new line</span><button id="undo" class="text-button" type="button" disabled>Undo edit</button></div></form>
+<p class="chat-note">A local command parser turns timing requests into validated edits. Pose, direction, and gait generation are not supported.</p>
+</section>
+</div>
+<p id="error" class="error" role="alert" hidden></p>
+<footer><span>Reconstruct once. Edit without refitting.</span><span>Rotations via quaternion SLERP · Translation via interpolation</span></footer>
+</main>
+</body></html>

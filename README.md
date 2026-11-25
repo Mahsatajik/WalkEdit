@@ -13,7 +13,7 @@ A computer vision baseline for monocular SMPL-X fitting, temporal motion editing
 ![CPU](https://img.shields.io/badge/Inference-CPU_baseline-c5d2e7?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research_prototype-f5cc88?style=flat-square)
 
-[Quick start](#quick-start) · [Video fitting](#fit-your-own-video) · [Method](docs/METHOD.md) · [Research roadmap](docs/RESEARCH.md)
+[Chat workspace](#chat-workspace) · [Quick start](#quick-start) · [Video fitting](#fit-your-own-video) · [Method](docs/METHOD.md)
 
 </div>
 
@@ -34,6 +34,38 @@ A **2.00-second** walking clip from KTH is reconstructed as SMPL-X motion and re
 | Compare | Mesh generation and shared-camera OpenGL rendering | Side-by-side video and fitting diagnostics |
 
 Reconstruction, editing, and rendering run independently through a documented motion format. Swap the reconstruction source or add a time map while reusing the downstream stages. See the [method](docs/METHOD.md) and [experiment plan](docs/RESEARCH.md).
+
+## Chat workspace
+
+**Type a timing command. Get a new 3D motion and a rendered comparison.** The English chat is a local, deterministic command interface; it does not require an API key or send prompts to an LLM.
+
+![WalkEdit chat workspace](docs/assets/chat-workspace.jpg)
+
+[Watch an actual 1.5x chat render](docs/assets/chat-demo.mp4)
+
+After [fitting a video](#fit-your-own-video) and obtaining the SMPL-X body model:
+
+```bash
+python -m pip install -r requirements-app.txt
+python walkedit_app.py --motion outputs/original.pt --body-model data/SMPLX_NEUTRAL.npz
+```
+
+Open **http://127.0.0.1:7863**. The local demo defaults to `outputs/walk-original.pt` if `--motion` is omitted. The source motion and body model are not bundled; they must already exist. The chat edits an existing reconstruction rather than uploading or fitting a new video.
+
+| Say | Result |
+| --- | --- |
+| `Set speed to 1.5x` | Absolute 1.5x timing relative to the original motion |
+| `Make it 20% slower` | Multiply the current target speed by 0.8 |
+| `Set speed to 2x from 0.5 to 1.5 seconds` | Edit that interval of source time |
+| `Set speed to 2x from 0.5 to 1.5 seconds with a smooth transition of 0.2 seconds` | Ramp into and out of the interval |
+| `Set the whole motion to 0.5x` | Clear the interval and slow the whole motion |
+| `Undo` / `Reset` | Restore the previous successful edit / original timing |
+
+Commands preserve the current interval and ramp unless explicitly changed. `Reset` clears both. An x-speed always refers to the original motion, not a chain of resampled files. Percentages change the current requested speed. These semantics are shown in the chat before rendering. Unclear, unsupported, out-of-range, and compound requests ask for clarification without changing the motion.
+
+The workspace accepts trusted local reconstructions up to 30 seconds and speeds from **0.25x to 4x**. Each successful edit writes an immutable MP4, edited `.pt`, and JSON plan with the full output-to-source time map. Undo reuses completed renders where possible. Failed renders preserve the previous successful edit. The shorter motion holds its final pose in the comparison; its encoded duration is reported separately.
+
+OpenGL 3.3 and the fitting dependencies are required for mesh rendering. Processing runs locally in one worker; the server binds to loopback. Session history and renders persist under `outputs/chat/` and are excluded from Git. This is a local research workspace, not an authenticated multi-user service. See [chat behavior and validation](docs/CHAT.md).
 
 ## Quick start
 
@@ -104,8 +136,9 @@ The motion format uses **smpl_params_global** with **global_orient**, **body_pos
 - Quaternion SLERP and linear root translation resampling.
 - Shared-camera mesh and BVH comparison videos.
 - Fitting diagnostics and timing regression checks.
+- English timing commands, source-interval edits, undo, and downloadable 3D chat results.
 
-Current limitations include monocular depth ambiguity, errors during limb occlusion, a weak-perspective camera approximation, and possible foot sliding or floor penetration. Root depth translation is fixed. Hard edits switch speed abruptly at their boundaries; smooth transitions are available through --transition. Hands, face, and conversational control are planned extensions.
+Current limitations include monocular depth ambiguity, errors during limb occlusion, a weak-perspective camera approximation, and possible foot sliding or floor penetration. Root depth translation is fixed. Hard edits switch speed abruptly at their boundaries; smooth transitions are available through --transition. Hands, face, free-form conversational reasoning, and new gait generation are not implemented. The chat supports the documented timing commands.
 
 ## Explore the code
 
@@ -115,6 +148,10 @@ retime.py             Source-time mapping and motion resampling
 render_smplx.py       Shared-camera mesh comparison
 preview_walk.py       BVH forward kinematics and skeleton preview
 scripts/demo.py       Downloadable CPU example
+chat_commands.py      English timing command -> validated edit plan
+walkedit_app.py       Local chat API, sessions, and rendering jobs
+chat_render.py        Trusted SMPL-X retiming and rendering worker
+web/                  Chat workspace interface
 tests/               Timing and interpolation checks
 docs/                Method, research plan, and demo media
 ```
