@@ -31,7 +31,7 @@ def load_vertices(path, model):
     return np.concatenate(batches), float(motion.get("fps", 30))
 
 
-def render_comparison(original, faster, fps, faces, output, speed):
+def render_comparison(original, faster, fps, faces, output, speed, edited_label=None):
     yaw, pitch = np.deg2rad([22, 12])
     camera_right = np.array([np.cos(yaw), 0, np.sin(yaw)])
     camera_flat = np.array([-np.sin(yaw), 0, np.cos(yaw)])
@@ -116,7 +116,7 @@ def render_comparison(original, faster, fps, faces, output, speed):
     writer.send(None)
     panels = [
         (original, "Original / 1x", (0.76, 0.84, 0.97)),
-        (faster, f"Retimed / {speed:g}x", (0.42, 0.94, 0.72)),
+        (faster, edited_label or f"Retimed / {speed:g}x", (0.42, 0.94, 0.72)),
     ]
     try:
         for frame in range(max(len(original), len(faster)) + round(fps * 0.4)):
